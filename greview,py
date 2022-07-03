@@ -8,6 +8,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 
 place = 'Alun Alun Rembang'
 
@@ -66,13 +69,20 @@ def writetocsv(all_reviews):
     f.close ( )
 
 if __name__ == '__main__' :
-    binary = FirefoxBinary ('C:\\Users\\loren\\AppData\\Local\\Mozilla Firefox\\firefox.exe')
-    option=webdriver.FirefoxOptions()
-    option.headless=True
+    options = Options()
+    binary = 'C:\\Users\\loren\\AppData\\Local\\Mozilla Firefox\\firefox.exe'
+    options = webdriver.FirefoxOptions()
+    options.headless=True
+    options.binary = binary
+    options.add_argument('start-maximized')
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     option.set_preference('dom.webdriver.enabled',False)
     option.set_preference('useAutomationExtension',False)
+    ser=Service(GeckoDriverManager().install())
     try :
-        driver = webdriver.Firefox ( firefox_binary=binary,options=option )
+        driver = webdriver.Firefox ( service=ser,options=options )
         asyncio.run(extract_google_reviews ( driver , place ))
     finally :
         driver.quit ( )
